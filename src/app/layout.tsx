@@ -2,9 +2,8 @@ import "~/styles/globals.css";
 
 import { Outfit } from "next/font/google";
 import { headers } from "next/headers";
-import { Themeprovider } from "./_components/index";
 import { TRPCReactProvider } from "~/trpc/react";
-import { getServerAuthSession } from "../server/auth";
+import { Themeprovider } from "./_components/index";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -23,10 +22,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerAuthSession();
   return (
     <html lang="en">
-      <body className={`font-outfit ${outfit.variable}`}>
+      <body
+        className={`font-outfit bg-theme text-revert-theme ${outfit.variable}`}
+      >
         <TRPCReactProvider headers={headers()}>
           <Themeprovider>{children}</Themeprovider>
         </TRPCReactProvider>

@@ -4,11 +4,12 @@ import {
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
+import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
 
 import { env } from "~/env.mjs";
 import { db } from "~/server/db";
-
+import { sendVerificationRequest } from "../helpers/nodemailer";
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
  * object and keep type safety.
@@ -37,6 +38,7 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
+
     session: ({ session, user }) => ({
       ...session,
       user: {
@@ -50,6 +52,13 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
+    }),
+    EmailProvider({
+      server: process.env.EMAIL_SERVER,
+      from: process.env.EMAIL_FROM,
+      sendVerificationRequest(params) {
+        sendVerificationRequest(params)
+      },
     }),
     /**
      * ...add more providers here.

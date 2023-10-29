@@ -24,7 +24,7 @@ const Btn = forwardRef<HTMLButtonElement, BtnProps>(
         }}
         type={type}
         {...props}
-        className={cn(className, variants({ variant, shape }))}
+        className={cn(variants({ variant, shape }), className)}
       >
         {children}
       </button>

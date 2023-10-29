@@ -7,11 +7,13 @@ import Container from "./Container";
 import ErrorBoundary from "./ErrorBoundary";
 
 import Icons from "./Icons";
+import Input from "./Input";
 
 import Modale from "./Modale";
 import NextImage from "./NextImage";
 
 import NotificationDot from "./NotificationDot";
+
 
 import ToggleBtn from "./ToggleBtn";
 
@@ -20,6 +22,6 @@ export {
   BtnProps,
   Container, ErrorBoundary, Icons,
   Modale,
-  NextImage, NotificationDot, ToggleBtn
+  NextImage, NotificationDot, ToggleBtn,Input
 };
 

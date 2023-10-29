@@ -1,5 +1,6 @@
 import { SVGProps } from "react";
 import { JSX } from "react/jsx-runtime";
+import { BsMoonStars, BsSunFill } from "react-icons/bs";
 type IconType = JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>;
 const Icons = {
   google: (props: IconType) => (
@@ -62,8 +63,14 @@ const Icons = {
       />
     </svg>
   ),
-  master: () => (
-    <svg width="48" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  master: (props: IconType) => (
+    <svg
+      {...props}
+      width="48"
+      height="24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <rect width="48" height="24" rx="2" fill="#FBFAF8" />
       <path
         fillRule="evenodd"
@@ -293,6 +300,8 @@ const Icons = {
       </g>
     </svg>
   ),
+  moon: BsMoonStars,
+  sun: BsSunFill,
 };
 
 export default Icons;

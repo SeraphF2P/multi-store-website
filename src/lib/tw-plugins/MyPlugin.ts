@@ -6,7 +6,7 @@ export const MyPlugin = plugin(
     addBase({
       ".dark": {
         "--theme": "230,41,59", //? slate["800"]
-        "--revert-theme": "226,232,240", //? slate["200"]
+        "--revert-theme": "241,245,249", //? slate["100"]
         "--theme-shadow": "245,245,245", //?
         "--primary": "239,92,246", //?violet["500"]
         "--card": "51,65,85", //?slate["700"]
@@ -14,7 +14,7 @@ export const MyPlugin = plugin(
         "--success": "50,200,50",
       },
       ".light": {
-        "--theme": "226,232,240", //? slate["200"]
+        "--theme": "241,245,249", //? slate["100"]
         "--revert-theme": "30,41,59", //? slate["800"]
         "--theme-shadow": "0,0,0", //?
         "--primary": "17,139,250", //?violet["400"]

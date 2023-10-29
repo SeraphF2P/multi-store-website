@@ -1,8 +1,8 @@
 import { FC } from "react";
 import { NextImage } from "~/ui";
 import { getServerAuthSession } from "../../server/auth";
-import { redirect } from "next/navigation";
-import Regester from "./_components/Regester";
+import Regester from "./_components/Register";
+import ThemeToggler from "./_components/ThemeToggler";
 
 interface pageProps {}
 
@@ -12,7 +12,7 @@ const page: FC<pageProps> = async ({}) => {
   //   redirect("/");
   // }
   return (
-    <main className=" flex h-screen w-full items-center justify-center bg-red-500">
+    <>
       <NextImage
         wrapperClassName=" absolute inset-0"
         className=" object-[40%_50%]"
@@ -21,7 +21,8 @@ const page: FC<pageProps> = async ({}) => {
       />
 
       <Regester />
-    </main>
+      <ThemeToggler className=" absolute right-4 top-4" />
+    </>
   );
 };
 
