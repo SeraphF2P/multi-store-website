@@ -4,6 +4,7 @@ import { Outfit } from "next/font/google";
 import { headers } from "next/headers";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Themeprovider } from "./_components/index";
+import { ToastContainer } from "../lib/myToast";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -27,6 +28,7 @@ export default async function RootLayout({
       <body
         className={`font-outfit bg-theme text-revert-theme ${outfit.variable}`}
       >
+        <ToastContainer position="top-center" />
         <TRPCReactProvider headers={headers()}>
           <Themeprovider>{children}</Themeprovider>
         </TRPCReactProvider>

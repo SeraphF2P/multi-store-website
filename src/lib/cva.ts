@@ -8,14 +8,14 @@ export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 export const variants = cva(
-  ` relative flex transition-[box-shadow,colors] px-4 py-2 justify-center items-center tracking-wider cursor-pointer text-revert-theme 
+  ` relative flex  px-4 py-2  justify-center items-center tracking-wider text-revert-theme
    [--variant:--primary] `,
   {
     variants: {
       variant: {
-        fill: " bg-variant hover:!shadow-[rgb(var(--theme),0.4)] shadow-overlay  transition-[box-shadow,colors] duration-700  ",
+        fill: " bg-variant border-[1px] border-white hover:!shadow-[rgb(var(--theme),0.4)] shadow-overlay  transition-[box-shadow,colors] duration-700  ",
         outline:
-          " ring-solid transition-[box-shadow,colors] duration-700  ring-2 ring-variant hover:bg-variant active:bg-variant     ",
+          " ring-solid  duration-700  ring-2 ring-variant hover:bg-variant active:bg-variant     ",
         ghost:
           "  hover:bg-variant/80   active:bg-variant   ",
         none: "",
@@ -27,7 +27,7 @@ export const variants = cva(
       },
       deActivated: {
         default:
-          " disabled:text-gray-700   disabled:bg-gray-500 disabled:ring-gray-500 ",
+          " disabled:text-gray-700 disabled:bg-gray-500 disabled:ring-gray-500 ",
         skelaton:
           "disabled:text-gray-400 disabled:ring-4 disabled:bg-gray-400 disabled:active:bg-transparent",
         link: "text-gray-400 ring-gray-400 active:bg-transparent hover:scale-100 cursor-auto",

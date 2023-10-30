@@ -5,10 +5,10 @@ export const MyPlugin = plugin(
   ({ addBase, addUtilities }) => {
     addBase({
       ".dark": {
-        "--theme": "230,41,59", //? slate["800"]
+        "--theme": "81,83,121",
         "--revert-theme": "241,245,249", //? slate["100"]
         "--theme-shadow": "245,245,245", //?
-        "--primary": "239,92,246", //?violet["500"]
+        "--primary": "23,25,48",
         "--card": "51,65,85", //?slate["700"]
         "--alert": "200,50,50",
         "--success": "50,200,50",
@@ -28,8 +28,9 @@ export const MyPlugin = plugin(
         " @apply border-border": {},
       },
       body: {
-        "@apply bg-theme text-revert-theme": {},
+        "@apply bg-theme text-revert-theme [transition:box-shadow_0,3s,colors_4s,background-color_4s]": {},
         "font-feature-settings": '"rlig" 1, "calt" 1',
+
       },
       h1: { "@apply text-2xl": {} },
       h2: { "@apply text-xl": {} },
@@ -126,7 +127,7 @@ export const MyPlugin = plugin(
             },
           },
           buzz: {
-            "0%,20%,40%,60%,80%,100%": { 
+            "0%,20%,40%,60%,80%,100%": {
               transform:
                 "rotate(0deg) ",
             },
@@ -139,9 +140,9 @@ export const MyPlugin = plugin(
                 "rotate(12.5deg)",
             },
           },
-         
+
+        },
       },
     },
-  },
-});
+  });
 export default MyPlugin;

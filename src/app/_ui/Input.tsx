@@ -8,21 +8,25 @@ interface InputProps extends ComponentProps<"input"> {
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, errorMSG, ...props }, ref) => {
     const id = useId();
+
     return (
-      <div className=" relative flex flex-col justify-start">
-        <label className=" capitalize" htmlFor={id}>
+      <div className="relative flex flex-col justify-start">
+        {/* <label className="capitalize" htmlFor={id}>
           {label}
-        </label>
+        </label> */}
         <input
           ref={ref}
           name={label}
           id={id}
-          className=" form-input  "
+          className={`form-input text-black placeholder:text-center placeholder:capitalize ${
+            errorMSG ? "border-rose-500" : ""
+          }`}
           type="text"
+          placeholder={label}
           {...props}
         />
         {errorMSG && (
-          <span className=" absolute -bottom-6 right-0 px-1 text-rose-500">
+          <span className="absolute -bottom-6 right-0 px-1 text-rose-500">
             {errorMSG}
           </span>
         )}
@@ -30,4 +34,5 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     );
   },
 );
+
 export default Input;
