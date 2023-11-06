@@ -1,13 +1,12 @@
 "use client";
 
-import Btn, { type BtnProps } from "./Btn";
+import { useState, type FC, ReactNode } from "react";
 import { cn } from "~/lib/cva";
-import { useState, type FC, type ReactNode } from "react";
+import Btn, { type BtnProps } from "./Btn";
 
-interface ToggleBtnProps extends Omit<BtnProps, "children"> {
+interface ToggleBtnProps extends BtnProps {
   whenToggled?: string;
   defaultToggleState?: boolean;
-  children: ReactNode | (({ isToggled }: { isToggled: boolean }) => ReactNode);
 }
 
 const ToggleBtn: FC<ToggleBtnProps> = ({
@@ -19,6 +18,7 @@ const ToggleBtn: FC<ToggleBtnProps> = ({
   ...props
 }) => {
   const [isToggled, setisToggled] = useState(defaultToggleState);
+
   return (
     <Btn
       onClick={(e) => {
@@ -29,9 +29,10 @@ const ToggleBtn: FC<ToggleBtnProps> = ({
         }
       }}
       className={cn(className, isToggled && whenToggled)}
+      aria-checked={isToggled}
       {...props}
     >
-      {typeof children == "function" ? children({ isToggled }) : children}
+      {children}
     </Btn>
   );
 };

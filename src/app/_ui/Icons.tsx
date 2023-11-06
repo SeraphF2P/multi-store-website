@@ -1,4 +1,5 @@
-import { SVGProps } from "react";
+"use client";
+import { ComponentProps, ComponentType, SVGProps } from "react";
 import { JSX } from "react/jsx-runtime";
 import { BsMoonStars, BsSunFill } from "react-icons/bs";
 type IconType = JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>;
@@ -304,4 +305,10 @@ const Icons = {
   sun: BsSunFill,
 };
 
-export default Icons;
+export default ({
+  name,
+  ...props
+}: { name: keyof typeof Icons } & IconType) => {
+  const Component = Icons[name];
+  return <Component {...props} />;
+};

@@ -5,11 +5,11 @@ export const MyPlugin = plugin(
   ({ addBase, addUtilities }) => {
     addBase({
       ".dark": {
-        "--theme": "81,83,121",
+        "--theme": "23,25,48",
         "--revert-theme": "241,245,249", //? slate["100"]
         "--theme-shadow": "245,245,245", //?
-        "--primary": "23,25,48",
-        "--card": "51,65,85", //?slate["700"]
+        "--primary": "81,83,121",
+        "--card": "23,25,48", //?slate["700"]
         "--alert": "200,50,50",
         "--success": "50,200,50",
       },
@@ -17,8 +17,8 @@ export const MyPlugin = plugin(
         "--theme": "241,245,249", //? slate["100"]
         "--revert-theme": "30,41,59", //? slate["800"]
         "--theme-shadow": "0,0,0", //?
-        "--primary": "17,139,250", //?violet["400"]
-        "--card": "203,213,225", //?slate["300"]
+        "--primary": "170,139,250", //?violet["400"]
+        "--card": "241,245,249", //?slate["300"]
         "--alert": "200,50,50",
         "--success": "50,200,50",
       },

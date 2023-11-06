@@ -1,5 +1,5 @@
+import { redirect } from "next/navigation";
 import { FC } from "react";
-import { NextImage } from "~/ui";
 import { getServerAuthSession } from "../../server/auth";
 import Regester from "./_components/Register";
 import ThemeToggler from "./_components/ThemeToggler";
@@ -8,9 +8,9 @@ interface pageProps {}
 
 const page: FC<pageProps> = async ({}) => {
   const session = await getServerAuthSession();
-  // if (session) {
-  //   redirect("/");
-  // }
+  if (session) {
+    redirect("/");
+  }
   return (
     <>
       {/* <NextImage

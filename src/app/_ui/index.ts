@@ -8,6 +8,7 @@ import ErrorBoundary from "./ErrorBoundary";
 
 import Icons from "./Icons";
 import Input from "./Input";
+import Loading from "./Loading";
 
 import Modale from "./Modale";
 import NextImage from "./NextImage";
@@ -22,6 +23,6 @@ export {
   BtnProps,
   Container, ErrorBoundary, Icons,
   Modale,
-  NextImage, NotificationDot, ToggleBtn,Input
+  NextImage, NotificationDot, ToggleBtn, Input, Loading
 };
 

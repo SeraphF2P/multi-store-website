@@ -1,11 +1,21 @@
 import { getServerAuthSession } from "~/server/auth";
-import { api } from "~/trpc/server";
+import { Btn } from "./_ui";
+import { Header } from "./_components";
+import Link from "next/link";
 
 export default async function Home() {
   const session = await getServerAuthSession();
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center ">
-      {session && session.user.id}
-    </main>
+    <>
+      <Header />
+      <Link href={"/dashboard"}>dashboard</Link>
+      <p className="w-full ">
+        {session?.user.role || "sd"}
+        <pre>
+          <code>{JSON.stringify(session, null, 2)}</code>
+        </pre>
+      </p>
+    </>
   );
 }

@@ -9,11 +9,11 @@ import { Variants } from "framer-motion";
 const toggleValues = [
   {
     name: "light",
-    component: <Icons.sun className=" h-8 w-8  text-yellow-300 " />,
+    component: <Icons name="sun" className=" h-8 w-8  text-yellow-300 " />,
   },
   {
     name: "dark",
-    component: <Icons.moon className=" h-8 w-8  text-slate-50" />,
+    component: <Icons name="moon" className=" h-8 w-8  text-slate-50" />,
   },
 ];
 const variants: Variants = {

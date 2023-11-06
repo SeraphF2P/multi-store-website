@@ -1,14 +1,19 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
-import type { FC, FormEvent, PropsWithChildren } from "react";
+import type { FC, PropsWithChildren } from "react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { cn } from "~/lib/cva";
 import { toast } from "~/lib/myToast";
 import { Btn, Icons, Input } from "~/ui";
+const signupFormSchema = z.object({
+  email: z.string().email(),
+});
+type signupFormType = z.infer<typeof signupFormSchema>;
 
-interface RegesterProps {}
-
-const Regester: FC<RegesterProps> = ({}) => {
+const Regester = ({}) => {
   const [hasAccount, setHasAccount] = useState(true);
   return (
     <section
@@ -30,21 +35,11 @@ interface SignupProps {
   isActive: boolean;
 }
 
-function GoogleSignIn({ children }: PropsWithChildren) {
-  return (
-    <Btn variant="ghost" onClick={() => signIn("google")}>
-      <Icons.google />
-      <span>{children}</span>
-    </Btn>
-  );
-}
-
 const Signup: FC<SignupProps> = ({ setHasAccount, isActive }) => {
-  const submitHandler = async (e: FormEvent) => {
-    e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-    const email = formData.get("email");
+  const { handleSubmit } = useForm<signupFormType>({
+    resolver: zodResolver(signupFormSchema),
+  });
+  const submitHandler = async ({ email }: signupFormType) => {
     const res = await signIn("email", { email, redirect: false });
     if (res?.ok) {
       toast({ message: `an email has been sent to ${email}`, type: "success" });
@@ -81,7 +76,7 @@ const Signup: FC<SignupProps> = ({ setHasAccount, isActive }) => {
       >
         <div className=" overflow-hidden  ">
           <form
-            onSubmit={submitHandler}
+            onSubmit={handleSubmit(submitHandler)}
             className="flex flex-col items-center justify-center gap-2"
           >
             <Input name="email" label="email" />
@@ -98,17 +93,21 @@ interface LoginProps {
   setHasAccount: (val: boolean) => void;
   isActive: boolean;
 }
-
+const loginFormSchema = z.object({
+  email: z.string().email(),
+});
+type loginFormType = z.infer<typeof loginFormSchema>;
 const Login: FC<LoginProps> = ({ setHasAccount, isActive }) => {
-  const submitHandler = async (e: FormEvent) => {
-    e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-    const email = formData.get("email");
-    if (email == null) return;
-
-    const res = await signIn("email", { email });
-    if (res?.ok == false) return;
+  const { handleSubmit, register } = useForm<loginFormType>({
+    resolver: zodResolver(loginFormSchema),
+  });
+  const submitHandler = async ({ email }: loginFormType) => {
+    const res = await signIn("email", { email, redirect: false });
+    if (res?.ok) {
+      toast({ message: `an email has been sent to ${email}`, type: "success" });
+    } else {
+      toast({ message: "somthing went wrong try again later", type: "error" });
+    }
   };
   return (
     <div
@@ -139,10 +138,10 @@ const Login: FC<LoginProps> = ({ setHasAccount, isActive }) => {
       >
         <div className=" overflow-hidden  ">
           <form
-            onSubmit={submitHandler}
+            onSubmit={handleSubmit(submitHandler)}
             className="flex flex-col items-center justify-center gap-2"
           >
-            <Input required name="email" label="email" />
+            <Input {...register("email", { required: true })} label="email" />
             <Btn type="submit">send email verfication</Btn>
             <span className="w-full text-center">or</span>
             <GoogleSignIn>log in with google</GoogleSignIn>
@@ -152,4 +151,12 @@ const Login: FC<LoginProps> = ({ setHasAccount, isActive }) => {
     </div>
   );
 };
+function GoogleSignIn({ children }: PropsWithChildren) {
+  return (
+    <Btn variant="ghost" onClick={() => signIn("google", { redirect: false })}>
+      <Icons name="google" />
+      <span>{children}</span>
+    </Btn>
+  );
+}
 export default Regester;
