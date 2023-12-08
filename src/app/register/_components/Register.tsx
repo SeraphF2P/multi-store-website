@@ -1,7 +1,5 @@
 "use client";
-import { signIn } from "next-auth/react";
-import { type FC, type PropsWithChildren } from "react";
-import { Btn, Icons } from "~/ui";
+import { type FC } from "react";
 import * as AuthProvider from "./AuthProvider";
 import * as Credentials from "./Credentials";
 interface SignupProps {}

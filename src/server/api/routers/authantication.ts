@@ -1,6 +1,7 @@
 import { hash } from 'bcryptjs';
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
+
 export const authanticationRouter = createTRPCRouter({
   signup: publicProcedure.input(z.object({
     username: z.string().min(3).max(12),
@@ -25,7 +26,7 @@ export const authanticationRouter = createTRPCRouter({
 
   }),
   usernameNotAvailable: publicProcedure.input(z.object({
-    username: z.string(),
+    username: z.string().min(3).max(20),
   }))
     .mutation(async ({ ctx, input: { username } }) => {
       const user = await ctx.db.user.findUnique({
