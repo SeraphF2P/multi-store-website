@@ -18,6 +18,7 @@ export function formatRelativeDate(
 
   for (let i = 0; i <= DIVISIONS.length; i++) {
     const division = DIVISIONS[i];
+    if (!division) continue;
     if (Math.abs(duration) < division.amount) {
       return RELATIVE_DATE_FORMATTER.format(
         Math.round(duration),

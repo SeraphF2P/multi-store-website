@@ -6,36 +6,45 @@ export const MyPlugin = plugin(
     addBase({
       ".dark": {
         "--theme": "23,25,48",
-        "--revert-theme": "241,245,249", //? slate["100"]
-        "--theme-shadow": "245,245,245", //?
+        "--revert-theme": "241,245,249",
+        "--text": "241,245,249",
+        "--revert-text": "23,25,48",
+        "--theme-shadow": "245,245,245",
         "--primary": "81,83,121",
-        "--card": "23,25,48", //?slate["700"]
+        "--card": "23,25,48",
         "--alert": "200,50,50",
         "--success": "50,200,50",
       },
       ".light": {
-        "--theme": "241,245,249", //? slate["100"]
-        "--revert-theme": "30,41,59", //? slate["800"]
-        "--theme-shadow": "0,0,0", //?
-        "--primary": "170,139,250", //?violet["400"]
-        "--card": "241,245,249", //?slate["300"]
+        "--theme": "241,245,249",
+        "--revert-theme": "30,41,59",
+        "--text": "23,25,48",
+        "--revert-text": "241,245,249",
+        "--theme-shadow": "0,0,0",
+        "--primary": "120,120,250",
+        "--card": "241,245,249",
         "--alert": "200,50,50",
         "--success": "50,200,50",
       },
     });
     addBase({
       "*": {
-        " @apply border-border": {},
+        " @apply border-border ": {},
+      },
+      "* > *": {
+        "transition-property": "background-color, border-color, text-decoration-color, fill, stroke",
+        "transition-timing-function": "linear",
+        "transition-duration": "400ms"
       },
       body: {
-        "@apply bg-theme text-revert-theme [transition:box-shadow_0,3s,colors_4s,background-color_4s]": {},
+        "@apply bg-theme text-revert-theme": {},
         "font-feature-settings": '"rlig" 1, "calt" 1',
 
       },
-      h1: { "@apply text-2xl": {} },
-      h2: { "@apply text-xl": {} },
-      h3: { "@apply text-lg": {} },
-      h4: { "@apply text-base": {} },
+      h1: { "@apply capitalize text-2xl": {} },
+      h2: { "@apply capitalize text-xl": {} },
+      h3: { "@apply capitalize text-lg": {} },
+      h4: { "@apply capitalize text-base": {} },
       p: { "@apply text-sm": {} },
       li: { "@apply list-none": {} },
       a: { "@apply !text-current": {} },
@@ -49,6 +58,22 @@ export const MyPlugin = plugin(
       ".remove-scroll-bar::-webkit-scrollbar": {
         display: "none",
       },
+      ".text-border": {
+        "text-shadow":
+          `-1px -1px 0 rgb(var(--theme)),
+            1px -1px 0 rgb(var(--theme)),
+           -1px 1px 0 rgb(var(--theme)),
+            1px 1px 0 rgb(var(--theme))`
+      },
+      ".variant-alert": {
+        "--variant": "200,0,0 !important"
+      },
+      ".variant-success": {
+        "--variant": "0,200,0 !important"
+      },
+      ".variant-info": {
+        "--variant": "0,0,200 !important"
+      }
     });
   },
   {
@@ -64,6 +89,8 @@ export const MyPlugin = plugin(
         colors: {
           theme: "rgb(var(--theme),<alpha-value>)",
           "revert-theme": "rgb(var(--revert-theme),<alpha-value>)",
+          text: "rgb(var(--text),<alpha-value>)",
+          "revert-text": "rgb(var(--revert-text),<alpha-value>)",
           primary: "rgb(var(--primary),<alpha-value>)",
           card: "rgb(var(--card),<alpha-value>)",
           variant: "rgb(var(--variant,0,0,0),<alpha-value>)",
@@ -98,8 +125,9 @@ export const MyPlugin = plugin(
             "fadein var(--fadein-duration,0.3s) forwards  var(--fadein-delay,0s)",
           fadeout:
             "fadeout var(--fadeout-duration,0.3s) forwards var(--fadeout-delay,0s)",
-          buzz:
-            "buzz 2s infinite linear  ",
+          buzz: "buzz 2s infinite linear  ",
+          slideDown: "slideDown 0.3s forwards linear  ",
+          slideUp: "slideUp 0.3s forwards linear  ",
         },
         keyframes: {
           reset: {
@@ -140,7 +168,22 @@ export const MyPlugin = plugin(
                 "rotate(12.5deg)",
             },
           },
-
+          slideDown: {
+            from: {
+              height: "0"
+            },
+            to: {
+              height: "var(--radix-collapsible-content-height)"
+            }
+          }
+          , slideUp: {
+            from: {
+              height: "var(--radix-collapsible-content-height)"
+            },
+            to: {
+              height: "0"
+            }
+          }
         },
       },
     },

@@ -19,7 +19,7 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
-      "~/ui": ["./src/app/_ui/index"]
+      "~/ui": ["src/ui/index"]
     },
     "plugins": [{ "name": "next" }]
   },

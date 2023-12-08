@@ -1,4 +1,3 @@
-"use client";
 
 import { cva, type VariantProps } from "class-variance-authority";
 import { type ClassValue, clsx } from "clsx";
@@ -8,16 +7,16 @@ export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 export const variants = cva(
-  ` relative flex  px-4 py-2  justify-center items-center tracking-wider text-revert-theme
-   [--variant:--primary] `,
+  ` relative flex  px-4 py-2  [--variant:--primary] duration-300  justify-center items-center tracking-wider text-revert-theme
+    `,
   {
     variants: {
       variant: {
-        fill: " bg-variant border-[1px] border-white hover:!shadow-[rgb(var(--theme),0.4)] shadow-overlay  transition-[box-shadow,colors] duration-700  ",
+        fill: " bg-variant border-[1px] border-revert-theme transition-shadow hover:!shadow-[rgb(var(--theme),0.4)] shadow-overlay     ",
         outline:
           " ring-solid  duration-700  ring-2 ring-variant hover:bg-variant active:bg-variant     ",
         ghost:
-          "  hover:bg-variant/80   active:bg-variant   ",
+          "  hover:bg-variant/80   active:bg-variant  transition-shadow hover:!shadow-[rgb(var(--theme),0.4)] shadow-overlay  ",
         none: "",
       },
       shape: {
@@ -33,10 +32,13 @@ export const variants = cva(
         link: "text-gray-400 ring-gray-400 active:bg-transparent hover:scale-100 cursor-auto",
       },
     },
+
     defaultVariants: {
       variant: "fill",
       shape: "rect",
       deActivated: "default",
+
+
     },
   }
 );
