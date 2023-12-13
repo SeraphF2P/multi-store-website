@@ -44,7 +44,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerAuthSession();
-  if (!session || session?.user.role !== "seller") {
+  if (!session || session?.user.role !== "seller" || !session?.user.id) {
     redirect("/register");
   }
   return (
@@ -55,9 +55,9 @@ export default async function RootLayout({
         <TRPCReactProvider headers={headers()}>
           <Themeprovider>
             <ToastContainer position="top-center" />
-            <header className=" fixed  right-0 top-0 z-40 flex h-screen  flex-col  items-center justify-around    bg-theme py-8  ">
+            <header className=" fixed  right-0 top-0 z-40 flex h-screen  flex-col  items-center justify-around    bg-primary py-8  ">
               <ToggleBtn
-                variant="ghost"
+                variant="none"
                 className=" group peer h-10 w-10 flex-col justify-around  px-0 py-1 data-[checked=true]:bg-primary/40 md:hidden "
               >
                 <span className=" h-1 w-9 origin-center rounded bg-revert-theme transition-transform group-data-[checked=true]:translate-y-2  group-data-[checked=true]:rotate-45" />
@@ -68,7 +68,7 @@ export default async function RootLayout({
                 {routes.map((route) => {
                   return (
                     <Link
-                      className="w-full bg-primary/30 px-2 py-4 text-center capitalize hover:bg-primary/70 "
+                      className="w-full bg-theme/30 px-2 py-4 text-center capitalize transition-colors duration-300 hover:bg-theme/70 "
                       href={route.href}
                     >
                       {route.label}

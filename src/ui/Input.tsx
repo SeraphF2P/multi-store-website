@@ -11,11 +11,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const id = useId();
 
     return (
-      <div className="relative flex flex-col justify-start pb-5">
+      <div className="relative flex flex-col justify-start  pb-5">
         <input
           ref={ref}
           id={id}
-          className={cn("form-input ", {
+          className={cn("form-input  ", {
             "border-amber-500": !!errorMSG,
             "h-10 text-black placeholder:text-center placeholder:capitalize": [
               "text",
@@ -25,8 +25,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             ].includes(type),
             "w-full bg-white p-0": type === "color",
           })}
-          type={type}
           placeholder={label}
+          type={type}
           {...props}
         />
         {errorMSG && (

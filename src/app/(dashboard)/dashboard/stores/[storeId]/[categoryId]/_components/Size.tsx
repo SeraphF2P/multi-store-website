@@ -1,11 +1,13 @@
 "use client";
 import { FC } from "react";
-import { Btn, BtnProps, ConfirmModale, Icons, Input, Modale, NextImage } from "~/ui";
+import { Btn, BtnProps, ConfirmModale, Icons, Input, Modale } from "~/ui";
 import { api } from "~/trpc/react";
 import { useForm } from "react-hook-form";
 import { RouterInputs } from "~/trpc/shared";
 import { useRouter } from "next/navigation";
-
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as ZOD from "~/lib/zodValidators";
+import { toast } from "../../../../../../../lib/myToast";
 type SizeCreateRouteType = RouterInputs["size"]["create"];
 interface SizeCreateProps {
   categoryId: string;
@@ -15,10 +17,17 @@ export const create: FC<SizeCreateProps> = ({ categoryId }) => {
   const router = useRouter();
   const { mutate } = api.size.create.useMutation({
     onSuccess: () => {
+      toast({ type: "success", message: "size added successfully" });
       router.refresh();
     },
   });
-  const form = useForm<SizeCreateRouteType>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SizeCreateRouteType>({
+    resolver: zodResolver(ZOD.size.create),
+  });
   return (
     <Modale>
       <Modale.Btn>add size</Modale.Btn>
@@ -27,18 +36,29 @@ export const create: FC<SizeCreateProps> = ({ categoryId }) => {
           <h2 className=" pb-2">add size</h2>
           <form
             className=" flex flex-col gap-2"
-            onSubmit={form.handleSubmit((values) => mutate(values))}
+            onSubmit={handleSubmit((values) => mutate(values))}
           >
-            <Input {...form.register("name")} label="name" type="text" />
-            <Input {...form.register("value")} label="size" type="text" />
+            <Input
+              errorMSG={errors.name?.message}
+              {...register("name")}
+              label="name"
+              type="text"
+            />
+            <Input
+              errorMSG={errors.value?.message}
+              {...register("value")}
+              label="size"
+            />
             <input
-              {...form.register("categoryId")}
+              {...register("categoryId")}
               value={categoryId}
               type="hidden"
             />
             <div className=" flex justify-between">
               <Modale.Close variant="ghost">close</Modale.Close>
-              <Btn type="submit">submit</Btn>
+              <Btn disabled={isSubmitting} type="submit">
+                submit
+              </Btn>
             </div>
           </form>
         </div>
@@ -55,6 +75,7 @@ export const edit: FC<SizeEditProps> = ({ sizeId, name, value, ...props }) => {
   const router = useRouter();
   const { mutate } = api.size.edit.useMutation({
     onSuccess: () => {
+      toast({ type: "success", message: "size added successfully" });
       router.refresh();
     },
     onError: (err) => {
@@ -69,7 +90,11 @@ export const edit: FC<SizeEditProps> = ({ sizeId, name, value, ...props }) => {
       console.error(err);
     },
   });
-  const form = useForm<SizeEditRouteType>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SizeEditRouteType>({
     values: {
       sizeId,
       name,
@@ -95,14 +120,25 @@ export const edit: FC<SizeEditProps> = ({ sizeId, name, value, ...props }) => {
           </div>
           <form
             className=" flex flex-col gap-2"
-            onSubmit={form.handleSubmit((values) => mutate(values))}
+            onSubmit={handleSubmit((values) => mutate(values))}
           >
-            <Input {...form.register("name")} label="name" type="text" />
-            <Input {...form.register("value")} label="size" type="text" />
+            <Input
+              errorMSG={errors.name?.message}
+              {...register("name")}
+              label="name"
+              type="text"
+            />
+            <Input
+              errorMSG={errors.value?.message}
+              {...register("value")}
+              label="size"
+            />
             <div className=" flex justify-between">
               <Modale.Close variant="ghost">close</Modale.Close>
 
-              <Btn type="submit">submit</Btn>
+              <Btn disabled={isSubmitting} type="submit">
+                submit
+              </Btn>
             </div>
           </form>
         </div>
@@ -110,4 +146,3 @@ export const edit: FC<SizeEditProps> = ({ sizeId, name, value, ...props }) => {
     </Modale>
   );
 };
-

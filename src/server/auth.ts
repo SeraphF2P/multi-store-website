@@ -8,10 +8,10 @@ import {
 import CredentialsProvider from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
+import { z } from "zod";
 import { env } from "~/env.mjs";
 import { db } from "~/server/db";
 import { sendVerificationRequest } from "../helpers/nodemailer";
-import * as JWT from 'next-auth/jwt'
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
  * object and keep type safety.
@@ -69,12 +69,15 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.username || !credentials.password) {
           return null;
         }
-        const user = await db.user.findUniqueOrThrow({
+        const user = await db.user.findFirstOrThrow({
           where: {
-            username: credentials.username
+            OR: [
+              { username: { equals: credentials.username } },
+              { email: { equals: credentials.username } },
+            ],
           },
         });
-        if (!user || !user.password) return null;
+        if (!user || !user.password || !user.username) return null;
 
         const isValidPassword = await compare(credentials.password, user.password);
 
@@ -84,8 +87,8 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           name: user.name || "",
           username: user.username || "",
-          role: user.role || "guest",
           email: user.email || "",
+          role: user.role || "guest",
         }
 
       },

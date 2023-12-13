@@ -1,17 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import { z } from "zod";
-
+import * as ZOD from '~/lib/zodValidators'
 import {
   createTRPCRouter,
   protectedProcedure
 } from "~/server/api/trpc";
 
 export const categoryRouter = createTRPCRouter({
-  create: protectedProcedure.input(z.object({
-    name: z.string().min(3),
-    storeId: z.string().min(3),
-    label: z.string().min(3),
+  create: protectedProcedure.input(ZOD.category.create.omit({ image: true }).extend({
     imageName: z.string().min(1)
   })).mutation(async ({ ctx, input: { name, storeId, label, imageName } }) => {
     if (!imageName) return;
@@ -35,10 +32,7 @@ export const categoryRouter = createTRPCRouter({
       },
     })
   }),
-  edit: protectedProcedure.input(z.object({
-    name: z.string().min(3),
-    categoryId: z.string().min(3),
-  })).mutation(async ({ ctx, input: { name, categoryId } }) => {
+  edit: protectedProcedure.input(ZOD.category.edit).mutation(async ({ ctx, input: { name, categoryId } }) => {
     await ctx.db.category.update({
       where: {
         id: categoryId,
@@ -49,7 +43,7 @@ export const categoryRouter = createTRPCRouter({
     })
   }),
   delete: protectedProcedure.input(z.object({
-    categoryId: z.string().min(3),
+    categoryId: z.string().uuid(),
   })).mutation(async ({ ctx, input: { categoryId } }) => {
     const category = await ctx.db.category.findUnique({
       where: {
@@ -60,13 +54,9 @@ export const categoryRouter = createTRPCRouter({
         billboard: true,
         products: {
           select: {
-            themes: {
+            image: {
               select: {
-                image: {
-                  select: {
-                    imageName: true
-                  }
-                }
+                imageName: true
               }
             }
           }
@@ -76,7 +66,7 @@ export const categoryRouter = createTRPCRouter({
     if (!category) return;
     const everyImageName = [
       ...(category?.billboard.map(billboard => billboard.imageName) || []),
-      ...(category?.products.flatMap(product => (product.themes.flatMap(theme => theme.image?.imageName || []))))
+      ...(category?.products.flatMap(product => (product.image?.imageName || [])))
     ]
 
     everyImageName.map(imageName => {
@@ -93,7 +83,7 @@ export const categoryRouter = createTRPCRouter({
     })
   }),
   read: protectedProcedure.input(z.object({
-    categoryId: z.string().min(1)
+    categoryId: z.string().uuid(),
   })).query(async ({ ctx, input }) => {
     const categorys = await ctx.db.category.findUnique({
       where: {

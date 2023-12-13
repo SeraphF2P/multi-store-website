@@ -16,6 +16,7 @@ import NoContent from "./NoContent";
 
 import NotificationDot from "./NotificationDot";
 import * as Select from "./Select";
+import Switch from "./Switch";
 import Table from "./Table";
 import ThemeToggler from "./ThemeToggler";
 import Themeprovider from "./Themeprovider";
@@ -23,11 +24,11 @@ import Themeprovider from "./Themeprovider";
 
 import ToggleBtn from "./ToggleBtn";
 import Tooltip from "./Tooltip";
-
+import UploadImagePreview from './UploadImagePreview'
 export {
   Btn,
   BtnProps,
-  Icons, Select,
+  Icons, Select, UploadImagePreview, Switch,
   Modale, ThemeToggler, Themeprovider, NextLink, Table, Tooltip, Collapsible,
   NextImage, NotificationDot, ToggleBtn, Input, Loading, NoContent, ConfirmModale
 };

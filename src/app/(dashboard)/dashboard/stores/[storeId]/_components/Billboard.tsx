@@ -3,17 +3,24 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "~/lib/myToast";
-import { Validator } from "~/lib/zodValidators";
+import * as ZOD from "~/lib/zodValidators";
 import { api } from "~/trpc/react";
 import { RouterInputs } from "~/trpc/shared";
-import { Btn, BtnProps, ConfirmModale, Input, Modale } from "~/ui";
-import UploadCoverImage from "./UploadImagePreview";
-interface BillboardCreateFormType
-  extends Omit<RouterInputs["billboard"]["create"], "image"> {
-  image: FileList;
-}
+import {
+  Btn,
+  BtnProps,
+  ConfirmModale,
+  Input,
+  Modale,
+  UploadImagePreview,
+} from "~/ui";
 
-interface BillboardModaleFormProps extends BtnProps {
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toFilePath } from "../../../../../../helpers/utile";
+type BillboardCreateFormType = z.infer<typeof ZOD.billboard.create>;
+
+interface BillboardModaleCreateFormProps extends BtnProps {
   storeId: string;
   categoryId: string;
   imageName?: string;
@@ -26,11 +33,12 @@ export const create = ({
   storeId,
   categoryId,
   ...props
-}: Omit<BillboardModaleFormProps, "submitHandler">) => {
+}: BillboardModaleCreateFormProps) => {
   const router = useRouter();
   const { mutate } = api.billboard.create.useMutation({
     onSuccess: () => {
       toast({ message: "billboard created successfully", type: "success" });
+      reset();
       router.refresh();
     },
     onError: () => {
@@ -38,10 +46,8 @@ export const create = ({
     },
   });
   const submitHandler = async (values: BillboardCreateFormType) => {
-    const file = values.image[0];
-    const validData = Validator.image.parse(file);
     const data = new FormData();
-    data.set("image", validData);
+    data.set("image", values.image[0]);
     data.set("storeId", values.storeId);
     await axios
       .post<{ imageName: string }>("/api/uploadImageToStore", data)
@@ -56,8 +62,14 @@ export const create = ({
         console.error(err);
       });
   };
-  const { handleSubmit, register } = useForm<BillboardCreateFormType>();
-
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<BillboardCreateFormType>({
+    resolver: zodResolver(ZOD.billboard.create),
+  });
   return (
     <Modale>
       <Modale.Btn {...props}>add billboard</Modale.Btn>
@@ -70,11 +82,16 @@ export const create = ({
             method="POST"
             onSubmit={handleSubmit(submitHandler)}
           >
-            <Input label="billboard label" {...register("label")} />
-            <UploadCoverImage
+            <Input
+              errorMSG={errors.label?.message}
+              label="billboard label"
+              {...register("label")}
+            />
+            <UploadImagePreview
               accept="image/*"
               type="file"
               {...register("image")}
+              errorMSG={errors.image?.message?.toString()}
             />
             <input value={storeId} {...register("storeId")} type="hidden" />
             <input
@@ -89,10 +106,11 @@ export const create = ({
     </Modale>
   );
 };
-interface BillboardEditFormType
-  extends Omit<RouterInputs["billboard"]["edit"], "image">,
-    BtnProps {
+type BillboardEditFormType = z.infer<typeof ZOD.billboard.edit>;
+
+interface BillboardModaleEditFormProps extends BillboardEditFormType, BtnProps {
   imagePath: string;
+  imageName: string;
   storeId: string;
 }
 export const edit = ({
@@ -103,7 +121,7 @@ export const edit = ({
   imagePath,
   label,
   ...props
-}: BillboardEditFormType) => {
+}: BillboardModaleEditFormProps) => {
   const router = useRouter();
   const { mutate } = api.billboard.edit.useMutation({
     onSuccess: () => {
@@ -115,36 +133,42 @@ export const edit = ({
     },
   });
 
-  const submitHandler = async (values: BillboardCreateFormType) => {
-    const file = values.image[0];
-    const validData = Validator.image.parse(file);
-    const data = new FormData();
-    data.set("image", validData);
-    data.set("storeId", storeId);
-    if (imagePath == undefined || imageName == undefined) return;
-    await axios
-      .post("/api/uploadImageToStore", data)
-      .then((res) => {
-        if (!res.data) return;
-        const newImageName = res.data.imageName || null;
-        if (!newImageName) return;
-
-        mutate({
-          ...values,
-          imageName: newImageName,
-          billboardId,
+  const submitHandler = async (values: BillboardEditFormType) => {
+    let newImageName;
+    if (values.image && values.image[0]) {
+      const data = new FormData();
+      data.set("image", values.image[0]);
+      data.set("storeId", storeId);
+      const res = await axios.post("/api/uploadImageToStore", data);
+      if (!res.data.imageName)
+        return toast({
+          type: "error",
+          message: "something went wrong try again later",
         });
-      })
-      .catch((err) => {
-        console.error(err);
+
+      newImageName = res.data.imageName;
+    }
+    if (!values.image[0] && values.label === label)
+      return toast({
+        type: "warn",
+        message: "you didn't change anythings to save",
       });
+    mutate({
+      ...values,
+      imageName: newImageName,
+    });
   };
-  const { handleSubmit, register } = useForm<BillboardCreateFormType>({
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = useForm<BillboardEditFormType>({
     defaultValues: {
-      imageName,
       label,
     },
+    resolver: zodResolver(ZOD.billboard.edit),
   });
+
   return (
     <Modale>
       <Modale.Btn {...props}>edit</Modale.Btn>
@@ -158,15 +182,19 @@ export const edit = ({
             onSubmit={handleSubmit(submitHandler)}
           >
             <Input label="billboard label" {...register("label")} />
-            <UploadCoverImage
-              accept="image/*"
-              type="file"
-              imageName={imageName}
-              imagePath={imagePath}
+            <UploadImagePreview
+              errorMSG={errors.image?.message?.toString()}
+              previewSrc={toFilePath(`/stores/${storeId}/` + imageName)}
               {...register("image")}
             />
-            <input value={storeId} {...register("storeId")} type="hidden" />
-            <Btn type="submit">Submit</Btn>
+            <input
+              value={billboardId}
+              {...register("billboardId")}
+              type="hidden"
+            />
+            <Btn disabled={isSubmitting} type="submit">
+              Submit
+            </Btn>
           </form>
         </div>
       </Modale.Content>
@@ -200,6 +228,7 @@ export const remove = ({
       className=" variant-alert"
       content="Are you sure you want to delete this billboard ,this action cannot be undone"
       onConfirm={() => mutate({ billboardId })}
+      {...props}
     >
       delete
     </ConfirmModale>

@@ -1,12 +1,8 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-
+import * as ZOD from '~/lib/zodValidators'
 export const colorRouter = createTRPCRouter({
-  create: protectedProcedure.input(z.object({
-    name: z.string().min(1),
-    value: z.string().min(1),
-    categoryId: z.string().min(1),
-  })).mutation(async ({ ctx, input }) => {
+  create: protectedProcedure.input(ZOD.color.create).mutation(async ({ ctx, input }) => {
     const color = await ctx.db.color.create({
       data: input
     })
@@ -26,12 +22,8 @@ export const colorRouter = createTRPCRouter({
     })
     return colors
   }),
-  edit: protectedProcedure.input(z.object({
-    name: z.string().min(1),
-    value: z.string().min(1),
-    colorId: z.string().min(1)
-  })).mutation(async ({ ctx, input }) => {
-    const updatedColor = await ctx.db.color.update({
+  edit: protectedProcedure.input(ZOD.color.edit).mutation(async ({ ctx, input }) => {
+    await ctx.db.color.update({
       where: {
         id: input.colorId
       },
@@ -45,7 +37,7 @@ export const colorRouter = createTRPCRouter({
   delete: protectedProcedure.input(z.object({
     colorId: z.string().min(1)
   })).mutation(async ({ ctx, input }) => {
-    const updatedColor = await ctx.db.color.delete({
+    await ctx.db.color.delete({
       where: {
         id: input.colorId
       },

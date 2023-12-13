@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
-import { FC, PropsWithChildren } from "react";
+import { FC, Key, PropsWithChildren } from "react";
 import { api } from "~/trpc/server";
-import { Btn, Collapsible, NextImage, NoContent, Table } from "~/ui";
+import { Btn, Collapsible, NextImage, NoContent, Switch, Table } from "~/ui";
 import * as Color from "./_components/Color";
 import * as Product from "./_components/Product";
 import * as Size from "./_components/Size";
 import { toFilePath } from "~/helpers/utile";
+import { formatCurrency } from "../../../../../../lib/utile/formatters";
 
 interface pageProps {
   params: {
@@ -36,7 +37,8 @@ const page: FC<pageProps> = async ({ params: { categoryId } }) => {
                   style={{
                     background: color.value,
                   }}
-                  className="  capitalize  text-border  "
+                  variant="none"
+                  className="  capitalize   text-border   "
                   colorId={color.id}
                   {...color}
                 >
@@ -83,55 +85,101 @@ const page: FC<pageProps> = async ({ params: { categoryId } }) => {
           storeId={storeId}
           categoryId={categoryId}
         />
-        <div className=" flex w-full flex-wrap">
+
+        <section className=" flex w-full flex-wrap items-start justify-center gap-4 p-2">
           {products &&
-            products.length > 0 &&
-            products.map((product) => {
+            products.map((group, index) => {
               return (
-                <pre>
-                  <code>{JSON.stringify(product.themes, null, 2)}</code>
-                </pre>
-                // <div className=" max-w-[320px] flex-1 rounded bg-theme p-2 ">
-                //   <h2>{product.name}</h2>
-                //   <div className=" flex flex-col ">
-                //     {product.themes &&
-                //       product.themes.map((img) => {
-                //         return (
-                //           <div key={img.id} className=" flex ">
-                //             <NextImage
-                //               sizes="320px 180px"
-                //               wrapperClassName="w-full max-w-[320px] aspect-video  "
-                //               className=" "
-                //               src={toFilePath(
-                //                 `/stores/${storeId}/${img.imageName}`,
-                //               )}
-                //               alt="product image"
-                //             />
-                //             <Btn
-                //               key={img.color.id}
-                //               style={{
-                //                 background: img.color.value,
-                //               }}
-                //               className="  capitalize  text-border  "
-                //             >
-                //               {img.color.name}
-                //             </Btn>
-                //             <Btn className="capitalize  text-border">
-                //               {img.size.name}
-                //             </Btn>
-                //             {/* <Product.edit {...product} /> */}
-                //           </div>
-                //         );
-                //       })}
-                //   </div>
-                // </div>
+                <div
+                  key={group.id}
+                  className="flex w-full max-w-xs flex-col  rounded-[20px] border-2 border-revert-theme"
+                >
+                  <div className=" flex w-full flex-col gap-1  ">
+                    {group.products.map((product) => {
+                      return (
+                        <div
+                          key={product.id}
+                          className="flex flex-col overflow-hidden rounded-[20px]   bg-theme"
+                        >
+                          <div className=" ">
+                            <h4 className=" p-2 text-center">{product.name}</h4>
+                            <NextImage
+                              wrapperClassName="  w-full aspect-video"
+                              className=" "
+                              src={toFilePath(
+                                `/stores/${storeId}/${product.image?.imageName}`,
+                              )}
+                              alt={`${product.name} image`}
+                              sizes="120px 80px"
+                            />
+                          </div>
+                          <aside className=" grid flex-1  grid-cols-[repeat(2,1fr)] ">
+                            <div
+                              style={{
+                                background: product.color.value,
+                              }}
+                              className=" flex items-center justify-center whitespace-nowrap  p-1 capitalize    text-border  "
+                            >
+                              {product.color.name}
+                            </div>
+                            <div className=" flex items-center justify-center whitespace-nowrap  p-1 capitalize  text-border  ">
+                              {product.size.name}
+                            </div>
+                            <div className=" flex items-center justify-center whitespace-nowrap p-1 ">
+                              {product.isFeatured ? "featured" : "not featured"}
+                            </div>
+                            <div className=" flex items-center justify-center whitespace-nowrap p-1 ">
+                              {product.isApproved ? "approved" : "not approved"}
+                            </div>
+                            <div className=" flex items-center justify-center whitespace-nowrap p-1 ">
+                              {formatCurrency(+product.price)}
+                            </div>
+                            <div className="  col-span-2 row-span-1 flex w-full">
+                              <Product.edit
+                                className=" flex-1 variant-info"
+                                colors={colors}
+                                sizes={sizes}
+                                product={{
+                                  productId: product.id,
+                                  color: product.color,
+                                  size: product.size,
+                                  colorId: product.color.id,
+                                  name: product.name,
+                                  price: product.price,
+                                  sizeId: product.size.id,
+                                  isFeatured: product.isFeatured,
+                                  image: product.image,
+                                  storeId,
+                                }}
+                              />
+                              <Product.remove
+                                className=" flex-1 variant-alert"
+                                productId={product.id}
+                                label={product.name}
+                              />
+                            </div>
+                          </aside>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <Product.create
+                    colors={colors}
+                    sizes={sizes}
+                    storeId={storeId}
+                    categoryId={categoryId}
+                    groupId={group.id}
+                    className=" rounded-b-[20px]"
+                    variant="ghost"
+                  />
+                </div>
               );
             })}
-        </div>
-        {(products.length == 0 || products.length == null) && <NoContent />}
-        <p>click on the product to edit</p>
+        </section>
+
+        {(!products || products.length == 0) && <NoContent />}
         <Collapsible text="show table">
-          <Table content={products} />
+          <Table content={products || []} />
         </Collapsible>
       </Section>
     </>

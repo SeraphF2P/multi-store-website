@@ -20,12 +20,12 @@ const page: FC<pageProps> = async ({ searchParams: { status } }) => {
   return (
     <main
       className={cn(
-        "relative  z-0 flex h-screen  items-center justify-center bg-gradient-to-r from-primary from-50% to-theme to-50%",
+        "relative  z-0 flex h-screen items-center  justify-center overflow-hidden  ",
       )}
     >
-      <div className=" absolute left-1/2  h-screen w-full max-w-[516px] -translate-x-1/2 ">
-        <div className=" absolute inset-0 bg-theme [clip-path:polygon(0_0,100%_0,100%_100%,0_0)] " />
-        <div className=" absolute inset-0 bg-primary [clip-path:polygon(0_0,100%_100%,0_100%,0_0)]" />
+      <div className=" absolute h-screen w-screen scale-[4] transition-[rotate] duration-1000 dark:[rotate:180deg]   ">
+        <div className=" absolute inset-0 bg-theme [clip-path:polygon(calc(50%_-_250px)_0,100%_0,100%_100%,calc(50%_+_250px)_100%,calc(50%_-_250px)_0)] " />
+        <div className=" absolute inset-0 bg-primary [clip-path:polygon(0_0,calc(50%_-_250px)_0%,calc(50%_+_250px)_100%,0_100%,0_0)]" />
       </div>
       <section
         className={cn(

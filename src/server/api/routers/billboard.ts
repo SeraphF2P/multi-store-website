@@ -29,30 +29,34 @@ export const billboardRouter = createTRPCRouter({
   edit: protectedProcedure.input(z.object({
     billboardId: z.string().min(3),
     label: z.string().min(3),
-    imageName: z.string().min(1),
+    imageName: z.string().min(1).optional(),
   })).mutation(async ({ ctx, input: { billboardId, label, imageName } }) => {
-    const billboard = await ctx.db.billboard.findUnique({
-      where: {
-        id: billboardId
-      },
-      select: {
-        storeId: true,
-        imageName: true
-      }
-    })
-    if (billboard?.imageName) {
-      const oldImagePath = path.join(`public/${billboard.storeId}/`, billboard?.imageName)
-      if (fs.existsSync(oldImagePath)) {
-        fs.rmSync(oldImagePath)
+    if (imageName) {
+      const billboard = await ctx.db.billboard.findUnique({
+        where: {
+          id: billboardId
+        },
+        select: {
+          storeId: true,
+          imageName: true
+        }
+      })
+      if (billboard?.imageName) {
+        const oldImagePath = path.join(`public/${billboard.storeId}/`, billboard?.imageName)
+        if (fs.existsSync(oldImagePath)) {
+          fs.rmSync(oldImagePath)
+        }
       }
     }
     await ctx.db.billboard.update({
       where: {
         id: billboardId,
       },
-      data: {
+      data: imageName ? {
         imageName,
         label,
+      } : {
+        label
       },
     })
   }),

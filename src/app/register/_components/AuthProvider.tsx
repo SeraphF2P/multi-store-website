@@ -15,7 +15,11 @@ const signupFormSchema = z.object({
 type signupFormType = z.infer<typeof signupFormSchema>;
 
 export const email: FC<AuthProviderProps> = ({}) => {
-  const { handleSubmit, register } = useForm<signupFormType>({
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isLoading },
+  } = useForm<signupFormType>({
     resolver: zodResolver(signupFormSchema),
   });
   const submitHandler = async ({ email }: signupFormType) => {
@@ -31,8 +35,14 @@ export const email: FC<AuthProviderProps> = ({}) => {
   };
   return (
     <form onSubmit={handleSubmit(submitHandler)} className="flex flex-col  ">
-      <Input {...register("email")} label="email" />
-      <Btn type="submit">send email verfication</Btn>
+      <Input
+        errorMSG={errors.email?.message}
+        {...register("email")}
+        label="email"
+      />
+      <Btn disabled={isLoading} type="submit">
+        send email verfication
+      </Btn>
     </form>
   );
 };

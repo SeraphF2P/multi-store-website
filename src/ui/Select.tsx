@@ -17,64 +17,74 @@ import { Btn, BtnProps } from "~/ui";
 
 interface SelectProps extends ComponentProps<"input"> {
   open?: boolean;
-  defaultSelected?: {
-    name: string;
-    value: string;
-  };
+  defaultSelected?: string;
+  errorMSG?: string;
 }
 type SelectContextProps = {
   isOpen: boolean;
+  errorMSG?: string;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
-  selected: {
-    name: string;
-    value: string;
-  };
-  setSelected: Dispatch<
-    SetStateAction<{
-      name: string;
-      value: string;
-    }>
-  >;
+  selected: string;
+  placeholder: string;
+  selectHandler: ({ name, value }: { name: string; value: string }) => void;
 };
 const Context = createContext<SelectContextProps>({
   isOpen: false,
   setIsOpen: () => {},
-  selected: {
-    name: "",
-    value: "",
-  },
-  setSelected: () => {},
+  selected: "",
+  selectHandler: () => {},
+  errorMSG: "",
+  placeholder: "select",
 });
 const useSelectContext = () => useContext(Context);
 
-export const root = forwardRef<ElementRef<"input">, SelectProps>(
+export const root = forwardRef<
+  ElementRef<"input">,
+  SelectProps & {
+    onSelectChange: ({ name, value }: { name: string; value: string }) => void;
+  }
+>(
   (
     {
       children,
       className,
       open = false,
-      defaultSelected = { name: "", value: "" },
+      defaultSelected = "",
+      defaultValue,
+      errorMSG = "",
+      placeholder = "select",
+      onSelectChange,
       ...props
     },
     forwardedRef,
   ) => {
     const [isOpen, setIsOpen] = useState(open);
     const [selected, setSelected] = useState(defaultSelected);
+    const [triggerPlaceholder, setTriggerPlaceholder] = useState(placeholder);
     const innerRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(forwardedRef, () => innerRef.current!, []);
-
-    if (innerRef.current) {
-      innerRef.current.value = selected.value;
-      console.log(innerRef.current.value);
-    }
-
+    const selectHandler = ({
+      name,
+      value,
+    }: {
+      name: string;
+      value: string;
+    }) => {
+      setTriggerPlaceholder(() => name);
+      setSelected(() => value);
+      if (onSelectChange) {
+        onSelectChange({ name, value });
+      }
+    };
     return (
       <Context.Provider
         value={{
           isOpen,
           setIsOpen,
+          placeholder: triggerPlaceholder,
           selected,
-          setSelected,
+          selectHandler,
+          errorMSG,
         }}
       >
         <div
@@ -82,7 +92,14 @@ export const root = forwardRef<ElementRef<"input">, SelectProps>(
           className={cn(" relative w-40  bg-black text-white ", className)}
         >
           {children}
-          <input type="hidden" ref={innerRef} {...props} />
+          <input
+            className="sr-only"
+            ref={innerRef}
+            {...props}
+            type="text"
+            defaultValue={selected}
+            value={selected}
+          />
         </div>
       </Context.Provider>
     );
@@ -105,21 +122,23 @@ export const content = ({
     </>
   );
 };
-export const trigger = ({
-  className,
-  placeholder,
-  children,
-  ...props
-}: BtnProps) => {
-  const { setIsOpen, selected } = useSelectContext();
+export const trigger = ({ className, children, ...props }: BtnProps) => {
+  const { setIsOpen, selected, errorMSG, placeholder } = useSelectContext();
   return (
-    <Btn
-      className={cn(" w-full", className)}
-      {...props}
-      onClick={() => setIsOpen((pre) => !pre)}
-    >
-      {selected.name ? selected.name : placeholder}
-    </Btn>
+    <div className="relative flex flex-col justify-start pb-5">
+      <Btn
+        className={cn(" form-select w-full  bg-theme", className)}
+        {...props}
+        onClick={() => setIsOpen((pre) => !pre)}
+      >
+        {placeholder}
+      </Btn>
+      {errorMSG && (
+        <span className="absolute bottom-0  w-full  text-center text-sm text-amber-500">
+          {errorMSG}
+        </span>
+      )}
+    </div>
   );
 };
 export const item = ({
@@ -129,13 +148,13 @@ export const item = ({
   className,
   ...props
 }: ComponentProps<"button"> & { name: string; value: string }) => {
-  const { setSelected, selected, setIsOpen } = useSelectContext();
+  const { selected, setIsOpen, selectHandler } = useSelectContext();
   return (
     <button
-      data-active={selected.value === value}
+      data-active={selected === value}
       className={cn(" border-black data-[active=true]:border-2", className)}
       onClick={() => {
-        setSelected({ name, value });
+        selectHandler({ name, value });
         setIsOpen(false);
       }}
       {...props}

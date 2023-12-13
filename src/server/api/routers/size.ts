@@ -1,12 +1,8 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-
+import * as ZOD from '~/lib/zodValidators'
 export const sizeRouter = createTRPCRouter({
-  create: protectedProcedure.input(z.object({
-    name: z.string().min(1),
-    value: z.string().min(1),
-    categoryId: z.string().min(1)
-  })).mutation(async ({ ctx, input }) => {
+  create: protectedProcedure.input(ZOD.size.create).mutation(async ({ ctx, input }) => {
     const size = await ctx.db.size.create({
       data: input
     })
@@ -26,12 +22,8 @@ export const sizeRouter = createTRPCRouter({
     })
     return sizes
   }),
-  edit: protectedProcedure.input(z.object({
-    name: z.string().min(1),
-    value: z.string().min(1),
-    sizeId: z.string().min(1)
-  })).mutation(async ({ ctx, input }) => {
-    const updatedSize = await ctx.db.size.update({
+  edit: protectedProcedure.input(ZOD.size.edit).mutation(async ({ ctx, input }) => {
+    await ctx.db.size.update({
       where: {
         id: input.sizeId
       },
@@ -45,7 +37,7 @@ export const sizeRouter = createTRPCRouter({
   delete: protectedProcedure.input(z.object({
     sizeId: z.string().min(1)
   })).mutation(async ({ ctx, input }) => {
-    const updatedSize = await ctx.db.size.delete({
+    await ctx.db.size.delete({
       where: {
         id: input.sizeId
       },

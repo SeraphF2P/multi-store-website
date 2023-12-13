@@ -3,18 +3,19 @@ import {
   ChangeEvent,
   ComponentProps,
   forwardRef,
+  useImperativeHandle,
   useRef,
   useState,
 } from "react";
-import { toast } from "~/lib/myToast";
-import { Btn, ConfirmModale, Icons } from "~/ui";
+import { ConfirmModale, Icons } from "~/ui";
+import { cn } from "../lib/cva";
 
 interface UploadCoverImageType extends ComponentProps<"input"> {
   maxSize?: number;
   caption?: string;
   title?: string;
-  imageName?: string;
-  imagePath?: string;
+  previewSrc?: string;
+  errorMSG?: string;
 }
 const UploadCoverImage = forwardRef<HTMLInputElement, UploadCoverImageType>(
   (
@@ -23,46 +24,42 @@ const UploadCoverImage = forwardRef<HTMLInputElement, UploadCoverImageType>(
       caption = "16:9 ratio is recommended. Max image size is 1mb",
       title = "Upload an image",
       onChange,
-      imageName = "",
-      imagePath = "",
+      previewSrc = "",
+      className,
+      errorMSG = "",
       ...props
     },
-    ref,
+    forwardedRef,
   ) => {
-    const [imagePreview, setImagePreview] = useState(imagePath + imageName);
+    const [imagePreview, setImagePreview] = useState(previewSrc);
     const inputImageRef = useRef<HTMLInputElement>(null);
-    //@ts-expect-error // ?  reffering the two refs to each other
-    inputImageRef.current = ref;
+
+    useImperativeHandle(forwardedRef, () => inputImageRef.current!, []); // ?  reffering the two refs to each other
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (file) {
         const inputImage = inputImageRef.current;
         if (!inputImage) return;
-        if (file.size >= maxSize) {
-          inputImage.value = "";
-          toast({ message: "over size file", type: "error" });
-          return;
-        }
         const reader = new FileReader();
-
         reader.onload = () => {
           setImagePreview(reader.result as string);
         };
         reader.readAsDataURL(file);
       }
     };
-
     return (
-      <div className=" relative isolate aspect-video">
+      <div className={cn(" relative isolate aspect-video", className)}>
         <input
-          ref={ref}
+          ref={inputImageRef}
           onChange={(e) => {
             handleImageChange(e);
             if (onChange) {
               onChange(e);
             }
           }}
+          accept="image/*"
+          type="file"
           {...props}
           className=" file:absolute file:inset-0   "
         />
@@ -95,6 +92,13 @@ const UploadCoverImage = forwardRef<HTMLInputElement, UploadCoverImageType>(
               <Icons className=" h-6 w-6" name="trash" />
               delete & re-upload
             </ConfirmModale>
+          </>
+        )}
+        {errorMSG && (
+          <>
+            <div className=" pointer-events-none absolute inset-0 flex items-center  justify-center  bg-rose-700/60 text-center">
+              {errorMSG}
+            </div>
           </>
         )}
       </div>

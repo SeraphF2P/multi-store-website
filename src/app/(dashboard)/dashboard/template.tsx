@@ -9,7 +9,7 @@ const variants: Variants = {
 export default function Template({ children }: { children: React.ReactNode }) {
   return (
     <motion.main
-      className="   h-screen  w-full flex-col overflow-y-scroll bg-primary  pr-20 remove-scroll-bar md:pr-80 "
+      className="   h-screen  w-full flex-col overflow-y-scroll bg-theme/70  pr-20 remove-scroll-bar md:pr-80 "
       variants={variants}
       initial="hidden"
       animate="enter"

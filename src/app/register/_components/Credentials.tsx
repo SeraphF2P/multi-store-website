@@ -36,7 +36,7 @@ export const signUp: FC<CredentialsProps> = () => {
 
   const checkIfUsernameIsAvailable = debounce((username) => {
     const u = username as string;
-    if (errors.username) return;
+    if (u.length < 3) return;
     vlidateUsername({ username: u });
   }, 400);
   return (
@@ -93,6 +93,7 @@ export const login: FC<CredentialsProps> = () => {
   });
   const submitHandler = async (values: CredentialsFormType) => {
     const res = await signIn("credentials", { redirect: false, ...values });
+    console.log(res);
     if (res?.ok) {
       router.push("/");
     }

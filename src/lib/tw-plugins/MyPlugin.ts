@@ -16,7 +16,7 @@ export const MyPlugin = plugin(
         "--success": "50,200,50",
       },
       ".light": {
-        "--theme": "241,245,249",
+        "--theme": "226,232,240",
         "--revert-theme": "30,41,59",
         "--text": "23,25,48",
         "--revert-text": "241,245,249",
@@ -31,11 +31,11 @@ export const MyPlugin = plugin(
       "*": {
         " @apply border-border ": {},
       },
-      "* > *": {
-        "transition-property": "background-color, border-color, text-decoration-color, fill, stroke",
-        "transition-timing-function": "linear",
-        "transition-duration": "400ms"
-      },
+      // "* > *": {
+      //   "transition-property": "background-color, border-color, text-decoration-color, fill, stroke",
+      //   "transition-timing-function": "linear",
+      //   "transition-duration": "400ms"
+      // },
       body: {
         "@apply bg-theme text-revert-theme": {},
         "font-feature-settings": '"rlig" 1, "calt" 1',

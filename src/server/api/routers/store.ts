@@ -55,13 +55,9 @@ export const storeRouter = createTRPCRouter({
         },
         products: {
           select: {
-            themes: {
+            image: {
               select: {
-                image: {
-                  select: {
-                    imageName: true
-                  }
-                }
+                imageName: true
               }
             }
           }
@@ -70,7 +66,7 @@ export const storeRouter = createTRPCRouter({
     })
     const everyImageName = [
       ...(store?.billboards.map(billboard => billboard.imageName) || []),
-      ...(store?.products.flatMap(product => product.themes.flatMap(theme => theme.image?.imageName || [])) || [])
+      ...(store?.products.flatMap(product => product.image?.imageName || []) || [])
     ]
     everyImageName.map(image => {
       const imagePath = path.join(`public/stores/${storeId}`, image)

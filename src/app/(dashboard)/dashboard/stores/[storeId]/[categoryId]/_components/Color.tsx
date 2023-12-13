@@ -5,7 +5,9 @@ import { api } from "~/trpc/react";
 import { useForm } from "react-hook-form";
 import { RouterInputs } from "~/trpc/shared";
 import { useRouter } from "next/navigation";
-
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as ZOD from "~/lib/zodValidators";
+import { toast } from "../../../../../../../lib/myToast";
 type ColorCreateRouteType = RouterInputs["color"]["create"];
 interface ColorCreateProps {
   categoryId: string;
@@ -15,10 +17,17 @@ export const create: FC<ColorCreateProps> = ({ categoryId }) => {
   const router = useRouter();
   const { mutate } = api.color.create.useMutation({
     onSuccess: () => {
+      toast({ type: "success", message: "color added successfully" });
       router.refresh();
     },
   });
-  const form = useForm<ColorCreateRouteType>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ColorCreateRouteType>({
+    resolver: zodResolver(ZOD.color.create),
+  });
   return (
     <Modale>
       <Modale.Btn>add color</Modale.Btn>
@@ -27,18 +36,30 @@ export const create: FC<ColorCreateProps> = ({ categoryId }) => {
           <h2 className=" pb-2">add color</h2>
           <form
             className=" flex flex-col gap-2"
-            onSubmit={form.handleSubmit((values) => mutate(values))}
+            onSubmit={handleSubmit((values) => mutate(values))}
           >
-            <Input {...form.register("name")} label="name" type="text" />
-            <Input {...form.register("value")} label="color" type="color" />
+            <Input
+              errorMSG={errors.name?.message}
+              {...register("name")}
+              label="name"
+              type="text"
+            />
+            <Input
+              errorMSG={errors.value?.message}
+              {...register("value")}
+              label="color"
+              type="color"
+            />
             <input
-              {...form.register("categoryId")}
+              {...register("categoryId")}
               value={categoryId}
               type="hidden"
             />
             <div className=" flex justify-between">
               <Modale.Close variant="ghost">close</Modale.Close>
-              <Btn type="submit">submit</Btn>
+              <Btn disabled={isSubmitting} type="submit">
+                submit
+              </Btn>
             </div>
           </form>
         </div>
@@ -60,6 +81,7 @@ export const edit: FC<ColorEditProps> = ({
   const router = useRouter();
   const { mutate } = api.color.edit.useMutation({
     onSuccess: () => {
+      toast({ type: "success", message: "color added successfully" });
       router.refresh();
     },
     onError: (err) => {
@@ -74,7 +96,11 @@ export const edit: FC<ColorEditProps> = ({
       console.error(err);
     },
   });
-  const form = useForm<ColorEditRouteType>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ColorEditRouteType>({
     values: {
       colorId,
       name,
@@ -100,14 +126,26 @@ export const edit: FC<ColorEditProps> = ({
           </div>
           <form
             className=" flex flex-col gap-2"
-            onSubmit={form.handleSubmit((values) => mutate(values))}
+            onSubmit={handleSubmit((values) => mutate(values))}
           >
-            <Input {...form.register("name")} label="name" type="text" />
-            <Input {...form.register("value")} label="color" type="color" />
+            <Input
+              errorMSG={errors.name?.message}
+              {...register("name")}
+              label="name"
+              type="text"
+            />
+            <Input
+              errorMSG={errors.value?.message}
+              {...register("value")}
+              label="color"
+              type="color"
+            />
             <div className=" flex justify-between">
               <Modale.Close variant="ghost">close</Modale.Close>
 
-              <Btn type="submit">submit</Btn>
+              <Btn disabled={isSubmitting} type="submit">
+                submit
+              </Btn>
             </div>
           </form>
         </div>
